@@ -1,6 +1,7 @@
-function [I] = show_write_image(image,dir,filename,title_)
-figure;imshow(image);title(title_);
-
+function [I] = show_write_image(image,dir,filename,title_,show)
+if show == true
+    figure;imshow(image);title(title_);
+end
 
 filename=int2str(filename);
 filename = strcat(filename,'_');

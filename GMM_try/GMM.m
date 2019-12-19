@@ -23,15 +23,11 @@ while t == 1 || ~convergence
     temp = log(temp);
     llh(t) = sum(temp);
     llh(t) = llh(t) / N_row;
-%     p = gama(:,1)+gama(:,2);
-%     p = log(p);
-%     lnpdf(t) = sum(p)/N_row;
+
     fprintf('llh(t)  %d \n', llh(t) );
     %用weight的更新程度来决定是否跳出迭代
-    if t > 1
-        
+    if t > 1 
         convergence =llh(t)>0.0 %(llh(t) - llh(t-1)) < 0.0001;
-        % convergence = (lnpdf(t) - lnpdf(t-1)) < 0.001% 0.0001;
 
     end    
     t = t + 1

@@ -4,74 +4,73 @@
 % impixelinfo;
 function [I] = preprocess(I)
 
-dir = 'C:\Users\DXT00\Desktop\gmm_imagr\int\';
+%中间过程截图
+dir = 'E:\研一所有课件\现代信号处理\Project Team6\GMM - try\int\';
 
 persistent filename ;
 if isempty(filename)
         filename = 0;
 end
 
-
+%拉普拉斯核
 h =[-1,-1,-1;-1,8,-1;-1,-1,-1];                                  
-im1 =imfilter(I,h); 
-figure;
-imshow(im1); 
-title('2：拉普拉斯操作后图像');
+laplaceImg =imfilter(I,h); 
+show_write_image(laplaceImg,dir,filename,"laplaceImg",false);
 
-%---图3，由于使用的模板如上，让常数c=1，简单的将原图和图2相加就可以得到一幅经过锐化过的图像。
-
- im2=I+im1;
- figure;
- imshow(im2);
- title('3:1图和2图相加后图像');
+%锐化后图像
+sharpImg=I+laplaceImg;
+show_write_image(sharpImg,dir,filename,"sharpImg",false);
 
 
-I_R = im2(:,:,1);
-figure;imshow(I_R);
-I_G = im2(:,:,2);
-% figure;imshow(I(:,:,3));
-I_B = im2(:,:,3);
+I_R = sharpImg(:,:,1);
+I_G = sharpImg(:,:,2);
+I_B = sharpImg(:,:,3);
+
 row = size(I,1);
 column = size(I,2);
 
-
+%该值越大，红色越强烈
 diff_r = 35;
 for i = 1:row
     for j = 1:column
+        %提取红色通道，使红色的地方变黑
         if I_R(i,j)-I_G(i,j)>diff_r &&I_R(i,j)-I_B(i,j)>diff_r
             I_R(i,j)=0;
         end
+         %使深灰色的地方变黑
         if I_R(i,j)<40 &&I_B(i,j)<40&&I_G(i,j)<40
             I_R(i,j)=0;
         end
     end
 end
-show_write_image(I_R,dir,filename,"binaryIR");
+show_write_image(I_R,dir,filename,"binaryImg of RedChannel",false);
+
+
+%对比度调整
 filename=filename+1;
-
-
-show_write_image(I_R,dir,filename,"I_R");
+show_write_image(I_R,dir,filename,"I_R",false);
 I_R = imadjust(I_R,[0.0 0.4],[],3.0);
 filename=filename+1;
-show_write_image(I_R,dir,filename,"R");
+show_write_image(I_R,dir,filename,"R",false);
 filename=filename+1;
-show_write_image(I_G,dir,filename,"I_G");
+show_write_image(I_G,dir,filename,"I_G",false);
 I_G = imadjust(I_G,[0.0 0.5],[],8);
 filename=filename+1;
-show_write_image(I_G,dir,filename,"G");
+show_write_image(I_G,dir,filename,"G",false);
 filename=filename+1;
-show_write_image(I_B,dir,filename,"I_B");
+show_write_image(I_B,dir,filename,"I_B",false);
 I_B = imadjust(I_B,[0.0 0.4],[],1.0);
 filename=filename+1;
-show_write_image(I_B,dir,filename,"B");
+show_write_image(I_B,dir,filename,"B",false);
 
+%I_R相当于mask,混合调整对比度后的Blue和Green通道
 I_B=(I_B+I_R)./2;
 filename=filename+1;
-show_write_image(I_B,dir,filename,"avgIB");
+show_write_image(I_B,dir,filename,"avgIB",true);
 
 I_G=(I_G+I_R)./2;
 filename=filename+1;
-show_write_image(I_G,dir,filename,"avgIG");
+show_write_image(I_G,dir,filename,"avgIG",true);
 
 
 I(:,:,1) = I_R;
